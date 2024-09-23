@@ -1,0 +1,30 @@
+package com.group.libraryapp.controller.book;
+
+import com.group.libraryapp.dto.book.request.BookCreateRequest;
+import com.group.libraryapp.dto.book.request.BookLoanRequest;
+import com.group.libraryapp.dto.book.request.BookReturnRequest;
+import com.group.libraryapp.service.book.BookService;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class BookController {
+    private final BookService bookService;
+
+    public BookController(BookService bookService) {
+        this.bookService = bookService;
+    }
+
+    @PostMapping("/book") // post니까 http 바디를 파싱하기 위해서 @RequestBody를 걸어줌.
+    public void saveBook(@RequestBody BookCreateRequest request) {
+        bookService.saveBook(request);
+    }
+
+    @PostMapping("/book/loan") // BookLoanRequest를 dto로 받아줌.
+    public void loanBook(@RequestBody BookLoanRequest request) { bookService.loanBook(request);}
+
+    @PutMapping("/book/return")
+    public void returnBook(@RequestBody BookReturnRequest request) {bookService.returnBook(request);}
+}

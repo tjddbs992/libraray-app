@@ -1,0 +1,55 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    url: "jdbc:h2:mem:library;MODE=MYSQL;NON_KEYWORDS=USER"
+    # NON_KEYWORDS=USER : MySQL을 기본적으로 실행하게 되면 유저라는 키워드는 예약된 키워드임.
+    # 그래서 유저 테이블을 못 만들기 때문에 유저라는건 키워드가 아니라는 것을 알려주는 옵션임.
+    username: "sa"
+    passward: ""
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+      properties:
+        hibernate:
+          show_sql: true
+          format_sql: true
+          dialect: org.hibernate.dialect.H2Dialect
+  h2: # H2 디비에 접속하기 위해 해줘야하는 옵션들
+    console:
+      enabled: true # H2 콘솔에 접속할 수 있게 한다는 의미
+      path: /h2-console
+
+# 똑같은 서버 코드를 실행시키지만, local이라는 profile을 입력하면, H2 DB를 사용하고
+# dev라는 profile을 입력하면 MySQL DB를 사용하게 바꿈.
+# H2 DB란? 경량 Database로, 개발 단계에서 많이 사용하며 디스크가 아닌 메모리에 데이터를 저장할 수 있다.
+# 메모리에 데이터를 저장하면 휘발된다. 그래서 개발 단계에서만 사용한다. 개발 단계에서는 테이블이 계속 변경되는데
+# 어차피 데이터가 휘발되기 때문에 ddl-auto 옵션을 create로 주면 테이블을 신경쓰지 않고 코드에만 집중할 수 있다!
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  # 아래에 있는 설정들은 특정 프로파일에서 실행된다. 는 의미로 써줌.
+  # 여기서는 MySQL을 root라는 계정으로 쓰고, ddl-auto가 none이고 dialect가 mysql8-dialect인 모든 옵션들이
+  # dev 프로파일을 가지고 실행될 때에만 적용된다는 의미.
+
+  datasource: # spring boot 가 어떠한 데이터베이스를 가리키게 할 것인가. 데이터의 원천
+    url: "jdbc:mysql://localhost/library"
+    # jdbc: java database connector, 디비 종류는 mysql, 접근하려는 mysql은 우리 컴에 있고, 접근할 디비는 library이다.
+    username: "root"
+    password: ""
+    driver-class-name: com.mysql.cj.jdbc.Driver # 디비에 접근할 때 사용할 프로그램을 의미
+
+  jpa:
+    hibernate: # jpa의 구현체 : hibernate
+      ddl-auto: none # 스프링이 시작할 때 DB에 있는 테이블을 어떻게 처리할지. create, create-drop, update, validate, none
+      properties:
+        hibernate:
+          show_sql: true # JPA를 사용해서 SQL을 날릴 때 SQL을 보여줄 것인가
+          format_sql: true # SQL을 보여줄 때 예쁘게 포맷팅할 것인가
+          dialect: org.hibernate.dialect.MySQL8Dialect
+          # dialect : 방언, 사투리의 의미. 이 옵션으로 DB를 특정하면 조금씩 다른 SQL을 수정해준다.
